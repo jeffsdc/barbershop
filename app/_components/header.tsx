@@ -8,6 +8,7 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
 import { Avatar, AvatarImage } from "./ui/avatar";
 import Link from "next/link";
+import SideMenu from "./side-menu";
 
 const Header = () => {
   const {data} = useSession();
@@ -34,56 +35,7 @@ const Header = () => {
           </SheetTrigger>
         
           <SheetContent className="p-0">
-            <SheetHeader className="">
-              <SheetTitle className="text-left border-b border-solid border-secondary p-5">
-                Menu
-              </SheetTitle>
-              {data?.user ? (
-                <div className="flex items-center px-5 py-6 justify-between">
-                  <div className="flex items-center gap-3 m-0">
-                    <Avatar>
-                      <AvatarImage
-                        src={data.user?.image ?? ""}
-                      />
-                    </Avatar>
-                    <h2>{data.user.name}</h2>
-                  </div>
-
-                  <Button variant="secondary" size="icon" onClick={handleLogoutClick}>
-                    <LogOutIcon />
-                  </Button>
-                </div>
-              ) : (
-                <div className="flex flex-col gap-3 px-5 py-6">
-                  <div className="flex items-center gap-2">
-                    <CircleUserRound className="text-secondary font-normal" size={32}></CircleUserRound>
-                    <h2 className="font-bold">Olá. Faça seu login!</h2>
-                  </div>
-                  <Button variant="secondary" className="gap-2 w-full justify-start" onClick={handleLoginClick}>
-                    <LogInIcon />
-                    Fazer Login
-                  </Button>
-                </div>
-              )}
-              {data?.user && (
-                <div className="flex flex-col gap-3">
-                <Button variant="outline" className="gap-2 w-full justify-start" asChild>
-                  <Link href="/">
-                    <HomeIcon size={18} />
-                    Inicio
-                  
-                  </Link>
-                </Button>
-                <Button variant="outline" className="gap-2 w-full justify-start" asChild>
-                  <Link href="/bookings">
-                    <CalendarIcon size={18} />
-                    Agendamentos
-                  </Link>
-                </Button>
-              </div>
-              )}
-              
-            </SheetHeader>
+            <SideMenu />
           </SheetContent>
         </Sheet>
       </CardContent>
