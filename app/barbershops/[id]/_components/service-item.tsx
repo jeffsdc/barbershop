@@ -6,12 +6,14 @@ import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger
 import { Barbershop, Service } from "@prisma/client";
 import { signIn, useSession } from "next-auth/react";
 import Image from "next/image"
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import  { ptBR } from "date-fns/locale";
 import { generateDayTimeList } from "../_helpers/hours";
 import { format, setHours, setMinutes } from "date-fns";
 import { saveBooking } from "../_actions/save-booking";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 
 interface ServiceItemProps {
@@ -21,8 +23,10 @@ interface ServiceItemProps {
 }
 
 const ServiceItem = ({service, barbershop, isAuthenticated} : ServiceItemProps) => {
+  const router = useRouter()
   const { data } = useSession()
   const [submitIsLoading, setSubmitIsLoading] = useState(false)
+  const [sheetIsOpen, setSheetIsOpen] = useState(false)
   const [date, setDate] = useState<Date | undefined>(undefined)
   const [hour, setHour] = useState<string | undefined>()
 
@@ -58,7 +62,16 @@ const ServiceItem = ({service, barbershop, isAuthenticated} : ServiceItemProps) 
         date: newDate,
         userId: (data.user as any).id,
       })
-
+      setSheetIsOpen(false);
+      setDate(undefined)
+      setHour(undefined)
+      toast("Reserva realizada com Sucesso", {
+        description: format(newDate, "dd 'de' MMMM 'às' HH:mm", {locale: ptBR}),
+        action: {
+          label: "Visualizar Reserva",
+          onClick: () => router.push("/bookings"),
+        },
+      })
     }catch(error){
       console.log(error)
     }finally{
@@ -95,7 +108,7 @@ const ServiceItem = ({service, barbershop, isAuthenticated} : ServiceItemProps) 
                   currency: "BRL"
                 }).format(Number(service.price))}
               </p>
-              <Sheet>
+              <Sheet open={sheetIsOpen} onOpenChange={setSheetIsOpen}>
                 <SheetTrigger asChild>
                   <Button variant="secondary" onClick={handleScheduleClick}>Agendar</Button>
                 </SheetTrigger>
